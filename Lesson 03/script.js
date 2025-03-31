@@ -53,21 +53,11 @@ form.addEventListener('submit', async (e) => {
     }
   };
 
-  try {
-    const response = await fetch(`${BASE_API_URL}/teach/users`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
-    });
 
-    if (!response.ok) throw new Error(`Status ${response.status}: ${response.statusText}`);
 
-    const result = await response.json();
-    responseMessage.innerHTML = `<div class="alert alert-success">User created successfully with ID: ${result.data.id}</div>`;
-    form.reset();
-  } catch (error) {
-    responseMessage.innerHTML = `<div class="alert alert-danger">Failed to create user: ${error.message}</div>`;
-  }
+  // Include your Advanced Code Screenshot here...
+
+
+
+
 });
