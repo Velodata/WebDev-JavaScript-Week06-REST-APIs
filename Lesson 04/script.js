@@ -1,106 +1,77 @@
-// Lesson 04 - Form Challenge (Full Version for Editing)
+// Lesson 04 - Update Address via PUT
 
 const BASE_API_URL = 'https://mx.velodata.org/api/v2';
 
-const roles = {
-  1: "Admin",
-  2: "Creator",
-  3: "Member",
-  4: "Spy"
+const fetchForm = document.getElementById('fetch-user-form');
+const updateForm = document.getElementById('update-address-form');
+const responseMessage = document.getElementById('response-message');
+const userIdInput = document.getElementById('user-id');
+
+let currentUserId = null;
+
+// Address field references
+const fields = {
+  name: null,
+  address_1: document.getElementById('address_1'),
+  address_2: document.getElementById('address_2'),
+  address_3: document.getElementById('address_3'),
+  city: document.getElementById('city'),
+  state: document.getElementById('state'),
+  postcode: document.getElementById('postcode')
 };
 
-const formArea = document.getElementById('form-area');
-const responseMessage = document.getElementById('response-message');
+// Dynamically inject name and profile image container into the form
+const nameInput = document.createElement('input');
+nameInput.type = 'text';
+nameInput.className = 'form-control';
+nameInput.id = 'name';
+nameInput.readOnly = true;
+nameInput.placeholder = 'User Name';
 
-// Inject a form into the page
-formArea.innerHTML = `
-  <form id="create-user-form" class="row g-3">
-    <div class="col-12">
-      <label for="name" class="form-label">Name</label>
-      <input type="text" class="form-control" id="name" required>
-    </div>
+const nameWrapper = document.createElement('div');
+nameWrapper.className = 'col-12';
+nameWrapper.innerHTML = `<label for="name" class="form-label">Name</label>`;
+nameWrapper.appendChild(nameInput);
 
-    <div class="col-12">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" class="form-control" id="email" required>
-    </div>
+const imageWrapper = document.createElement('div');
+imageWrapper.className = 'col-12';
+imageWrapper.innerHTML = `<img id="profile-image" src="" alt="Profile Image" class="img-thumbnail" style="max-height: 100px;" />`;
 
-    <div class="col-12">
-      <label for="password" class="form-label">Password <small class="text-muted">(min 8 characters, at least one number)</small></label>
-      <input type="password" class="form-control" id="password" required>
-    </div>
+updateForm.insertBefore(imageWrapper, updateForm.firstChild);
+updateForm.insertBefore(nameWrapper, updateForm.firstChild);
 
-    <div class="col-12">
-      <label for="role_id" class="form-label">Role</label>
-      <select class="form-select" id="role_id" required>
-        <option value="">Choose a role</option>
-        <option value="1">Admin</option>
-        <option value="2">Creator</option>
-        <option value="3">Member</option>
-        <option value="4">Spy</option>
-      </select>
-    </div>
+fields.name = nameInput;
 
-    <div class="col-12">
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-  </form>
-`;
-
-const form = document.getElementById('create-user-form');
-const nameInput = document.getElementById('name');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const roleInput = document.getElementById('role_id');
-
-form.addEventListener('submit', async (e) => {
+// Step 1: Fetch user data
+fetchForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-
-  const password = passwordInput.value;
-  const passwordValid = password.length >= 8 && /\d/.test(password);
-  if (!passwordValid) {
-    responseMessage.innerHTML = `<div class="alert alert-warning">Password must be at least 8 characters long and include at least one number.</div>`;
-    return;
-  }
-
-  const roleId = roleInput.value;
-  const roleName = roles[roleId] || "Unknown";
-
-  const userData = {
-    data: {
-      attributes: {
-        name: nameInput.value.trim(),
-        email: emailInput.value.trim(),
-        password: password,
-        role_name: roleName,
-        vmd_user_email: "trainer@example.com",
-        vmd_user_name: "Trainer"
-      },
-      relationships: {
-        roles: {
-          data: [
-            { id: roleId, type: "roles" }
-          ]
-        }
-      }
-    }
-  };
+  const userId = userIdInput.value.trim();
+  if (!userId) return;
 
   try {
-    const response = await fetch(`${BASE_API_URL}/teach/users`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
+    const res = await fetch(`${BASE_API_URL}/teach/users/${userId}`);
+    if (!res.ok) throw new Error(`User ${userId} not found`);
+    const { data } = await res.json();
+
+    currentUserId = data.id;
+    const attrs = data.attributes;
+
+    // Populate form fields
+    fields.name.value = attrs.name || '';
+    Object.keys(fields).forEach(key => {
+      if (key !== 'name') fields[key].value = attrs[key] || '';
     });
 
-    if (!response.ok) throw new Error(`Status ${response.status}: ${response.statusText}`);
+    const profileImg = document.getElementById('profile-image');
+    profileImg.src = attrs.profile_image || 'https://via.placeholder.com/100x100?text=No+Image';
 
-    const result = await response.json();
-    responseMessage.innerHTML = `<div class="alert alert-success">User created successfully with ID: ${result.data.id}</div>`;
-    form.reset();
-  } catch (error) {
-    responseMessage.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+    updateForm.classList.remove('d-none');
+    responseMessage.innerHTML = '';
+  } catch (err) {
+    updateForm.classList.add('d-none');
+    responseMessage.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
   }
 });
+
+// Include your Advanced Code Screenshot here...
+
