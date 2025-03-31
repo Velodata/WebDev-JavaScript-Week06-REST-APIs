@@ -1,4 +1,4 @@
-# Lesson 04 - Form Challenge
+# Lesson 05 - Form Challenge
 
 ## 🧠 Objective
 Use everything you've learned so far to build your own user registration form — from scratch. This time, you're on your own (mostly).
