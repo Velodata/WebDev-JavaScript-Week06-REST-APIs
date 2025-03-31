@@ -49,6 +49,7 @@ If you finish early:
 - Consider using your chatGPT skills to find a way to do the following
 - (1) Add the user's **profile image** at the top of each card (use the `profile_image` field inside `attributes`)
 - (2) Add a Bootstrap spinner or loading message while the data is loading
+- the field you would want to use is named "profile_image".  Consider looking at your DEVTOOLS Network XHR response.
 
 ---
 

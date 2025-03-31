@@ -1,7 +1,7 @@
 // Lesson 01 - Fetch and display all users
 
 // Base API URL (adjust if necessary)
-const REACT_APP_API_URL = 'https://mx.velodata.org/api/v2';
+const BASE_API_URL = 'https://mx.velodata.org/api/v2';
 
 // Target output container
 const output = document.getElementById('user-output');
@@ -9,7 +9,7 @@ const output = document.getElementById('user-output');
 // Fetch all users from REST API
 async function getAllUsers() {
     try {
-        const response = await fetch(`${REACT_APP_API_URL}/teach/users`);
+        const response = await fetch(`${BASE_API_URL}/teach/users`);
         if (!response.ok) throw new Error('Network response was not ok');
 
         const usersResponse = await response.json();
